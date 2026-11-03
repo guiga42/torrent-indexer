@@ -25,7 +25,7 @@ import (
 
 var vacaTorrent = IndexerMeta{
 	Label:       "vaca_torrent",
-	URL:         utils.GetIndexerURLFromEnv("INDEXER_VACA_TORRENT_URL", "https://vacatorrentmov.com/"),
+	URL:         utils.GetIndexerURLFromEnv("INDEXER_VACA_TORRENT_URL", "https://vaqueirofilmes.com/"),
 	SearchURL:   "wp-admin/admin-ajax.php",
 	PagePattern: "page/%s",
 }
@@ -347,6 +347,15 @@ func getTorrentsVacaTorrent(ctx context.Context, i *Indexer, link, referer strin
 			}
 		}
 	})
+
+	// Since 2026-10 downloads are behind /movie-links/<id>/ -> /enc/go.php?id=<encrypted>,
+	// which ends in an ad wall with a countdown, so there is nothing to extract here.
+	if len(magnetLinks) == 0 && doc.Find("a[href*=\"/movie-links/\"], a[href*=\"/enc/go.php\"]").Length() > 0 {
+		logging.Warn().
+			Str("url", link).
+			Str("indexer", vacaTorrent.Label).
+			Msg("Post only has protected movie-links/enc links, magnets are not available")
+	}
 
 	size = utils.StableUniq(size)
 

@@ -19,7 +19,9 @@ const (
 	cacheKey = "shortLivedCache"
 )
 
-var challangeRegex = regexp.MustCompile(`(?i)(just a moment|cf-chl-bypass|under attack)`)
+// challangeRegex matches anti-bot pages that must not be cached and should be retried
+// through FlareSolverr: Cloudflare and the custom "VaqueiroCine · Proteção Anti-Bot" page.
+var challangeRegex = regexp.MustCompile(`(?i)(just a moment|cf-chl-bypass|under attack|verificando acesso|prote[çc][ãa]o anti-bot)`)
 
 type Requster struct {
 	fs                        *FlareSolverr
