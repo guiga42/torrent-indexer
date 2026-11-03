@@ -1,6 +1,7 @@
 package utils_test
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/felipemarinho97/torrent-indexer/utils"
@@ -138,6 +139,48 @@ func TestDecodeStarckDataU(t *testing.T) {
 			}
 			if got != tt.want {
 				t.Errorf("DecodeStarckDataU() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestDecodeStarckXid(t *testing.T) {
+	tests := []struct {
+		name       string
+		xid        string
+		wantPrefix string
+		wantErr    bool
+	}{
+		{
+			name:       "Valid xid magnet link",
+			xid:        "b3IWVmFudnYHb2ImU9Vmd0dWOHRjIw99J4dTdWNDRB1wJ1JTcTJmNG4BJ6JTYTJnJGRGZpJXaThDJwoGb4bGZ39TBkNlambWNiU25uZzbjd3MGJjVnghJ3bTNHNmRBZoNhLjOnkTN2gpOzJSNTUWNyZBRmOmYDFjAuYlbzMmNk92Z1MhbybmMmNz5lEvJ4dnOWRD5yEjP2ZWZShWZ0N0djcHZjAW1lF1MjZ0MHETAlZlMiMkJ0YmElRlMuMkPkZUY0MlclMmQkFzZjMyalL2QmVjwyN1LkLnamZWNydhYvJXLTBlNoZBapNWbj0mkud2YhO2bS9iUtVyJDRTMmNyFBVuNBdjNWk252EjOuaSMWUjFyAyRyJmNnFiRu5ybXPmRX9UV1IkbtcmRCNEUlwzJuQnMSRjUyEyP2RXMiVHUkAycuRCSnUERzR0QSaSLzUnIyguRybiNmUjJyUhRubmR2VF52VsYBaWTW4C5u4la1cWL20jVlEyMtd0UmE1l2RjOBZTUSYk55NjJLbTR2Jk0GllYMMWT05UE1V2bTOmJTNnYph5YsJXPTITJmEGdxYHMWIj59Iua3bHM3RzV0Muc3YHO2MTUlAmM1d0JHEnIlR9MydkPWYWRlhwM0JkdTZHN0BBczJmJTFTJjNGaBJ2JTVTJyJGcGdyJT5TQtJubGdHdHNHJ1JhYhaiY352gutuZlYXc3QiJl5pM5b0ZSEW501pNlcDa3M3QlllMlMkZ0ZGEhlxbtMmLz5mMvN3dvJWbT5SJjUGZzYSQWZT50Q1c0bjMm1yN1UpZyYHRXAmIlFmMud0bHEmIl99M1dkbWYmRlNwMlJkJTZnN0RBcyJmPTFXJjVGakJ2cTVCJyUGLzcmQDJSJpUwcyLmRntiBlU1byYnRmdnxhRpbyYGY3QWRuNyZrYGZWUXNlIrMuZ0ZXEmI25uOpeTeHYCl556JuJTZTJXNGQBYlNWMj50kuE2b2O3OSVTUuYyY5R2JmUTFmJudGdHYWIW595jduaWbWR3FwVyJuJTYnN2RBUyJmPTdXJHVGIkJ9cTdCJWUGRzdwQHJSJTUhNyYBR2JitTUlJycGRiJm5T1vJhcGcGdnVTRuYpdubHdiJH1hJnYhZ2aWt3JygoLuYmYX93JyJkZpdybCUS5z5lQpdTcSE3UzQzMlQzMTc0IlE1MxJkMTZzJhMGb3YmJW5T5vJ1dGbWYm5WNj5pZuYQbX",
+			wantPrefix: "magnet:?xt=urn:btih:8e3f7fc2876fa9835ffb637c2318816ecceac16b&dn=C%C3%B3digo.Vingan%C3%A7a.2026.WEB-DL.2160p",
+		},
+		{
+			name:    "Base64 that is not a magnet link",
+			xid:     "aGVsbG8gd29ybGQ=",
+			wantErr: true,
+		},
+		{
+			name:    "Empty xid",
+			xid:     "",
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, gotErr := utils.DecodeStarckXid(tt.xid)
+			if gotErr != nil {
+				if !tt.wantErr {
+					t.Errorf("DecodeStarckXid() failed: %v", gotErr)
+				}
+				return
+			}
+			if tt.wantErr {
+				t.Fatal("DecodeStarckXid() succeeded unexpectedly")
+			}
+			if !strings.HasPrefix(got, tt.wantPrefix) {
+				t.Errorf("DecodeStarckXid() = %v, want prefix %v", got, tt.wantPrefix)
 			}
 		})
 	}

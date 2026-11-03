@@ -94,3 +94,35 @@ func DecodeStarckDataU(dataU string) (string, error) {
 func IsMagnetLink(link string) bool {
 	return len(link) > 8 && link[:8] == "magnet:?"
 }
+
+// DecodeStarckXid decodes the obfuscated magnet link from the "xid" query parameter
+// of the download links (e.g. https://filmedl.com/?xid=...). The value is the base64
+// of the magnet link, shuffled with the same stepping cursor used by data-u. This is indexer-specific.
+func DecodeStarckXid(xid string) (string, error) {
+	if xid == "" {
+		return "", fmt.Errorf("empty xid value")
+	}
+
+	unshuffled, err := unshuffleStringByStep(xid, 3)
+	if err != nil {
+		return "", fmt.Errorf("unshuffle failed: %w", err)
+	}
+
+	var decoded []byte
+	for _, enc := range []*base64.Encoding{base64.StdEncoding, base64.RawStdEncoding, base64.URLEncoding, base64.RawURLEncoding} {
+		decoded, err = enc.DecodeString(unshuffled)
+		if err == nil {
+			break
+		}
+	}
+	if err != nil {
+		return "", fmt.Errorf("base64 decode failed: %w", err)
+	}
+
+	magnetLink := string(decoded)
+	if !IsMagnetLink(magnetLink) {
+		return "", fmt.Errorf("decoded string is not a valid magnet link: %s", magnetLink)
+	}
+
+	return magnetLink, nil
+}
