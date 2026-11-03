@@ -11,12 +11,12 @@ Visit [https://torrent-indexer.darklyn.org/](https://torrent-indexer.darklyn.org
 
 ## Supported sites
 
-- [comando-torrents](https://comando.la/)
-- [bludv](https://bludvfilmes.tv/)
-- [torrent-dos-filmes](https://torrentdosfilmes.se/)
-- [starck-filmes](https://www.starckfilmes.fans/)
-- [rede-torrent](https://redetorrent.com/)
-- [vaca-torrent](https://vacatorrentmov.com/)
+- [comando-torrents](https://comando1.com/)
+- [bludv](https://bludvfilmes2.xyz/)
+- [torrent-dos-filmes](https://torrentdosfilmes-v2.xyz/)
+- [starck-filmes](https://starckfilmes-v28.com/)
+- [rede-torrent](https://redestorrents.com/)
+- [vaca-torrent](https://vaqueirofilmes.com/)
 
 ## Deploy
 
@@ -59,6 +59,16 @@ You can configure the server using the following environment variables:
 - `MAGNET_METADATA_API_ADDRESS`: (optional) The address of your magnet metadata API. Default: `N/A`
 - `MAGNET_METADATA_API_TIMEOUT_SECONDS`: (optional) The timeout for the magnet metadata API requests in seconds. Default: `10`
 - `INDEXER_<NAME>_URL`: (optional) Set a custom URL for the indexer. Where the "NAME" will be always uppercase indexer key with underscores. ex: `INDEXER_DODO_FILMES_URL=https://my-proxied-dodo-url.org`
+
+    | Endpoint (`/indexers/...`) | Variable | Default |
+    |---|---|---|
+    | `comando_torrents` | `INDEXER_COMANDO_URL` | `https://comando1.com/` |
+    | `bludv` | `INDEXER_BLUDV_URL` | `https://bludvfilmes2.xyz/` |
+    | `torrent-dos-filmes` | `INDEXER_TORRENT_DOS_FILMES_URL` | `https://torrentdosfilmes-v2.xyz/` |
+    | `starck-filmes` | `INDEXER_STARCK_FILMES_URL` | `https://starckfilmes-v28.com/` |
+    | `rede_torrent` | `INDEXER_REDE_TORRENT_URL` | `https://redestorrents.com/` |
+    | `vaca_torrent` | `INDEXER_VACA_TORRENT_URL` | `https://vaqueirofilmes.com/` |
+
 ## Integrating with Jackett
 
 You can integrate this indexer with Jackett by adding a new Torznab custom indexer. Here is an example of how to do it for the `bludv` indexer:
