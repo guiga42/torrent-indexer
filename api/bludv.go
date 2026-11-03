@@ -20,7 +20,7 @@ import (
 
 var bludv = IndexerMeta{
 	Label:       "bludv",
-	URL:         utils.GetIndexerURLFromEnv("INDEXER_BLUDV_URL", "https://bludv-v1.xyz/"),
+	URL:         utils.GetIndexerURLFromEnv("INDEXER_BLUDV_URL", "https://bludvfilmes2.xyz/"),
 	SearchURL:   "?s=",
 	PagePattern: "page/%s",
 }
@@ -162,6 +162,19 @@ func getTorrentsBluDV(ctx context.Context, i *Indexer, link, referer string) ([]
 		})
 	}
 
+	// Since 2026-10 the site uses a server-side link protector (/gate/go/<id>) that
+	// redirects to a partner page and only releases the magnet after a round trip,
+	// so there is nothing to decode locally.
+	if len(magnetLinks) == 0 {
+		if gates := countBluDVGateLinks(textContent); gates > 0 {
+			logging.Warn().
+				Str("url", link).
+				Int("gate_links", gates).
+				Str("indexer", bludv.Label).
+				Msg("Post only has protected /gate/go/ links, magnets are not available")
+		}
+	}
+
 	var audio []schema.Audio
 	var year string
 	var size []string
@@ -274,4 +287,10 @@ func getPublishedDate(document *goquery.Document) time.Time {
 	}
 
 	return date
+}
+
+// countBluDVGateLinks counts the download buttons that point to the site's
+// server-side link protector (e.g. https://bludvfilmes2.xyz/gate/go/f4bca4038a596115?p=72232).
+func countBluDVGateLinks(content *goquery.Selection) int {
+	return content.Find("a[href*=\"/gate/go/\"]").Length()
 }
